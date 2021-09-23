@@ -14,6 +14,42 @@ LIGHT_GREY = (220, 220, 220)
 GREY = (190, 190, 190)
 DARK_GREY = (119, 119, 119)
 
+# Board numbers
+numbers_left = [
+    [5, 5],
+    [3, 5, 3],
+    [2, 9, 2],
+    [1, 2, 1, 2, 1],
+    [1, 11, 1],
+    [4, 1, 4],
+    [4, 1, 4],
+    [13],
+    [6, 6],
+    [13],
+    [1, 2, 2, 1],
+    [1, 11, 1],
+    [2, 9, 2],
+    [3, 5, 3],
+    [5, 5],
+]
+numbers_top = [
+    [5, 5],
+    [3, 5, 3],
+    [2, 9, 2],
+    [1, 11, 1],
+    [1, 1, 6, 2, 1],
+    [2, 1, 3, 3],
+    [2, 1, 3, 3],
+    [7, 1, 3],
+    [2, 1, 3, 3],
+    [2, 1, 3, 3],
+    [1, 1, 6, 2, 1],
+    [1, 11, 1],
+    [2, 9, 2],
+    [3, 5, 3],
+    [5, 5],
+]
+
 # Set up the clock
 clock = pygame.time.Clock()
 
@@ -27,6 +63,15 @@ class Game:
     TICK_RATE = 30
 
     def __init__(self, title, width, height, blocks_horizontally, blocks_vertically):
+        """Initializes the class
+
+        Args:
+            title (str): Title of the game window
+            width (int): Width of the game window
+            height (int): Height of the game window
+            blocks_horizontally (int): Number of blocks on the board, horizontally
+            blocks_vertically (int): Number of blocks on the board, vertically
+        """
         self.title = title
         self.width = width
         self.height = height
@@ -38,10 +83,10 @@ class Game:
         pygame.display.set_caption(title)
 
     def create_blank_board(self):
-        """Creates a blank board
+        """Creates a blank board.
 
         Returns:
-            list: list of all white squares
+            list: List of all white squares
         """
 
         all_squares = []
@@ -56,6 +101,7 @@ class Game:
         return all_squares
 
     def draw_board(self):
+        """Draws the board on screen."""
         pygame.draw.rect(
             self.game_screen,
             DARK_GREY,
@@ -73,12 +119,10 @@ class Game:
                 pygame.draw.rect(self.game_screen, color, square)
 
     def draw_numbers(self):
-        numbers_left = [[1, 2, 3], [15, 3, 2, 5], [2, 4, 2], [3, 8, 12, 5, 25]]
-        numbers_top = [[1, 2, 3], [15, 3, 2, 5], [2, 4, 2], [3, 8, 12, 5, 25]]
-
-        pos_y = 200
+        """Draws the numbers on the left and top of the board."""
 
         # Drawing the numbers on the left of the board
+        pos_y = 200
         for i in range(len(numbers_left)):
             pos_x = 200 - (20 * len(numbers_left[i]))
             for j in range(len(numbers_left[i])):
@@ -93,8 +137,6 @@ class Game:
 
         # Drawing the numbers on the top of the board
         pos_x = 200
-        pos_y = 200
-
         for i in range(len(numbers_top)):
             pos_y = 200 - (20 * len(numbers_top[i]))
             for j in range(len(numbers_top[i])):
@@ -108,8 +150,8 @@ class Game:
             pos_x += 20
 
     def run_game_loop(self):
+        """Runs the main game loop."""
         is_game_over = False
-        did_win = False
 
         # Main game loop
         while not is_game_over:
@@ -152,7 +194,7 @@ class Game:
 
 
 pygame.init()
-new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 30, 30)
+new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
 all_squares = new_game.create_blank_board()
 new_game.run_game_loop()
 
