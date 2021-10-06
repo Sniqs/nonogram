@@ -58,6 +58,7 @@ clock = pygame.time.Clock()
 # Set up font
 pygame.font.init()
 font = pygame.font.SysFont("Arial", 18)
+large_font = pygame.font.SysFont("Arial", 50)
 
 
 class Game:
@@ -151,6 +152,18 @@ class Game:
 
             pos_x += 20
 
+    def show_message(self, message_text):
+        text = large_font.render(message_text, True, BLACK)
+        rect = self.game_screen.get_rect()
+        text_rect = text.get_rect(center=(rect.center))
+        bg_rect = text_rect.inflate(BLOCK_SIZE / 4, BLOCK_SIZE / 4)
+        pygame.draw.rect(self.game_screen, BLACK, bg_rect)
+        pygame.draw.rect(self.game_screen, WHITE, text_rect)
+        # self.game_screen.blit(text, bg_rect)
+        self.game_screen.blit(text, text_rect)
+        pygame.display.update()
+        clock.tick(self.TICK_RATE / 60)
+
     def run_game_loop(self):
         """Runs the main game loop."""
         is_game_over = False
@@ -165,10 +178,24 @@ class Game:
 
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if load_button.button_clicked(event.pos):
-                        with open("save_game.txt", "rb") as f:
-                            global all_squares
-                            all_squares = pickle.load(f)
-                            
+                        try:
+                            with open("save_game.txt", "rb") as f:
+                                global all_squares
+                                all_squares = pickle.load(f)
+                                self.draw_board()
+                        except:
+                            self.show_message("Load unsuccessful")
+                        else:
+                            self.show_message("Game Loaded")
+
+                    if save_button.button_clicked(event.pos):
+                        try:
+                            with open("save_game.txt", "wb") as f:
+                                pickle.dump(all_squares, f)
+                        except:
+                            self.show_message("Save unsuccessful")
+                        else:
+                            self.show_message("Game Saved")
 
                     # Check which square was clicked and change its color on the list
                     for row in all_squares:
@@ -180,10 +207,6 @@ class Game:
                                 else:
                                     item[1] = WHITE
 
-                    if save_button.button_clicked(event.pos):
-                        with open("save_game.txt", "wb") as f:
-                            pickle.dump(all_squares, f)
-                            
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                     # Check which square was clicked and change its color on the list
                     for row in all_squares:
@@ -217,17 +240,31 @@ class Button:
         )
 
     def draw_button(self, surface):
+        """Draws the button on screen
+
+        Args:
+            surface (pygame.Surface): Surface on which to draw the button
+        """
         pygame.draw.rect(surface, DARK_GREY, self.button)
         text = font.render(self.button_text, True, WHITE)
         text_rect = text.get_rect(center=(self.button.center))
         surface.blit(text, text_rect)
 
     def button_clicked(self, event_pos):
+        """Checks if button was clicked
+
+        Args:
+            event_pos (tuple): Position of the mouse click event
+
+        Returns:
+            int: Value indicating if button was clicked
+        """
+
         return self.button.collidepoint(event_pos)
 
 
 pygame.init()
-new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 2, 2)
+new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
 load_button = Button(BLOCK_SIZE / 2, BLOCK_SIZE / 2, "LOAD")
 save_button = Button(BLOCK_SIZE * 5, BLOCK_SIZE / 2, "SAVE")
 all_squares = new_game.create_blank_board()
