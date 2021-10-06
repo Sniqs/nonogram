@@ -93,13 +93,14 @@ class Game:
         """
 
         all_squares = []
+        square_fill = "empty"
         for y in range(200, self.blocks_vertically * BLOCK_SIZE + 200, BLOCK_SIZE):
             row = []
             for x in range(
                 200, self.blocks_horizontally * BLOCK_SIZE + 200, BLOCK_SIZE
             ):
                 square = pygame.Rect(x, y, BLOCK_SIZE - 1, BLOCK_SIZE - 1)
-                row.append([square, WHITE])
+                row.append([square, square_fill])
             all_squares.append(row)
         return all_squares
 
@@ -118,8 +119,34 @@ class Game:
 
         for row in all_squares:
             for item in row:
-                square, color = item
-                pygame.draw.rect(self.game_screen, color, square)
+                square, square_fill = item
+                if square_fill == "empty":
+                    square_image = pygame.image.load("empty.png")
+                    image = pygame.transform.scale(
+                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                    )
+                elif square_fill == "black":
+                    square_image = pygame.image.load("black.png")
+                    image = pygame.transform.scale(
+                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                    )
+                elif square_fill == "dot":
+                    square_image = pygame.image.load("dot.png")
+                    image = pygame.transform.scale(
+                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                    )
+                elif square_fill == "tentative_black":
+                    square_image = pygame.image.load("tentative_black.png")
+                    image = pygame.transform.scale(
+                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                    )
+                elif square_fill == "tentative_dot":
+                    square_image = pygame.image.load("tentative_dot.png")
+                    image = pygame.transform.scale(
+                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                    )
+                pygame.draw.rect(self.game_screen, WHITE, square)
+                self.game_screen.blit(image, (square.left, square.top))
 
     def draw_numbers(self):
         """Draws the numbers on the left and top of the board."""
@@ -164,7 +191,6 @@ class Game:
         bg_rect = text_rect.inflate(BLOCK_SIZE / 4, BLOCK_SIZE / 4)
         pygame.draw.rect(self.game_screen, BLACK, bg_rect)
         pygame.draw.rect(self.game_screen, WHITE, text_rect)
-        # self.game_screen.blit(text, bg_rect)
         self.game_screen.blit(text, text_rect)
         pygame.display.update()
         clock.tick(self.TICK_RATE / 60)
@@ -206,23 +232,27 @@ class Game:
                     # Check which square was clicked and change its color on the list
                     for row in all_squares:
                         for item in row:
-                            square, color = item
+                            square, square_fill = item
                             if square.collidepoint(event.pos):
-                                if color == WHITE:
-                                    item[1] = BLACK
+                                if square_fill == "empty":
+                                    item[1] = "black"
+                                elif square_fill == "black":
+                                    item[1] = "dot"
                                 else:
-                                    item[1] = WHITE
+                                    item[1] = "empty"
 
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                     # Check which square was clicked and change its color on the list
                     for row in all_squares:
                         for item in row:
-                            square, color = item
+                            square, square_fill = item
                             if square.collidepoint(event.pos):
-                                if color == WHITE:
-                                    item[1] = LIGHT_GREY
+                                if square_fill == "empty":
+                                    item[1] = "tentative_black"
+                                elif square_fill == "tentative_black":
+                                    item[1] = "tentative_dot"
                                 else:
-                                    item[1] = WHITE
+                                    item[1] = "empty"
 
             # Redraw screen
             self.game_screen.fill(WHITE)
