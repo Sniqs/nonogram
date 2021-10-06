@@ -1,5 +1,6 @@
 import pygame
 import sys
+import pickle
 
 # Screen and block size
 SCREEN_TITLE = "Nonogram"
@@ -163,6 +164,12 @@ class Game:
                     is_game_over = True
 
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if load_button.button_clicked(event.pos):
+                        with open("save_game.txt", "rb") as f:
+                            global all_squares
+                            all_squares = pickle.load(f)
+                            
+
                     # Check which square was clicked and change its color on the list
                     for row in all_squares:
                         for item in row:
@@ -172,11 +179,11 @@ class Game:
                                     item[1] = BLACK
                                 else:
                                     item[1] = WHITE
-                    if load_button.button_clicked(event.pos):
-                        print("Load game")
-                    if save_button.button_clicked(event.pos):
-                        print("Save game")
 
+                    if save_button.button_clicked(event.pos):
+                        with open("save_game.txt", "wb") as f:
+                            pickle.dump(all_squares, f)
+                            
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                     # Check which square was clicked and change its color on the list
                     for row in all_squares:
@@ -220,7 +227,7 @@ class Button:
 
 
 pygame.init()
-new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
+new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 2, 2)
 load_button = Button(BLOCK_SIZE / 2, BLOCK_SIZE / 2, "LOAD")
 save_button = Button(BLOCK_SIZE * 5, BLOCK_SIZE / 2, "SAVE")
 all_squares = new_game.create_blank_board()
