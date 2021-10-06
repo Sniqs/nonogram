@@ -5,6 +5,7 @@ import sys
 SCREEN_TITLE = "Nonogram"
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
+# TODO: Fix font scaling when block size changes
 BLOCK_SIZE = 20
 
 # Colors
@@ -171,6 +172,10 @@ class Game:
                                     item[1] = BLACK
                                 else:
                                     item[1] = WHITE
+                    if load_button.button_clicked(event.pos):
+                        print("Load game")
+                    if save_button.button_clicked(event.pos):
+                        print("Save game")
 
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                     # Check which square was clicked and change its color on the list
@@ -196,20 +201,22 @@ class Game:
 
 
 class Button:
-    def __init__(self, x_pos, y_pos, button_action):
+    def __init__(self, x_pos, y_pos, button_text):
         self.x_pos = x_pos
         self.y_pos = y_pos
-        self.button_action = button_action
+        self.button_text = button_text
+        self.button = pygame.Rect(
+            self.x_pos, self.y_pos, BLOCK_SIZE * 4, BLOCK_SIZE * 2
+        )
 
     def draw_button(self, surface):
-        button = pygame.Rect(self.x_pos, self.y_pos, BLOCK_SIZE * 4, BLOCK_SIZE * 2)
-        pygame.draw.rect(surface, DARK_GREY, button)
-        text = font.render(self.button_action, True, BLACK)
-        text_rect = text.get_rect(center=(button.center))
+        pygame.draw.rect(surface, DARK_GREY, self.button)
+        text = font.render(self.button_text, True, WHITE)
+        text_rect = text.get_rect(center=(self.button.center))
         surface.blit(text, text_rect)
 
-    def button_clicked(self):
-        pass
+    def button_clicked(self, event_pos):
+        return self.button.collidepoint(event_pos)
 
 
 pygame.init()
