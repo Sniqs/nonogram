@@ -187,14 +187,35 @@ class Game:
             self.game_screen.fill(WHITE)
             self.draw_board()
             self.draw_numbers()
+            load_button.draw_button(self.game_screen)
+            save_button.draw_button(self.game_screen)
 
             # Update display
             pygame.display.update()
             clock.tick(self.TICK_RATE)
 
 
+class Button:
+    def __init__(self, x_pos, y_pos, button_action):
+        self.x_pos = x_pos
+        self.y_pos = y_pos
+        self.button_action = button_action
+
+    def draw_button(self, surface):
+        button = pygame.Rect(self.x_pos, self.y_pos, BLOCK_SIZE * 4, BLOCK_SIZE * 2)
+        pygame.draw.rect(surface, DARK_GREY, button)
+        text = font.render(self.button_action, True, BLACK)
+        text_rect = text.get_rect(center=(button.center))
+        surface.blit(text, text_rect)
+
+    def button_clicked(self):
+        pass
+
+
 pygame.init()
 new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
+load_button = Button(BLOCK_SIZE / 2, BLOCK_SIZE / 2, "LOAD")
+save_button = Button(BLOCK_SIZE * 5, BLOCK_SIZE / 2, "SAVE")
 all_squares = new_game.create_blank_board()
 new_game.run_game_loop()
 
