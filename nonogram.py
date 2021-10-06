@@ -4,8 +4,8 @@ import pickle
 
 # Screen and block size
 SCREEN_TITLE = "Nonogram"
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 600
 # TODO: Fix font scaling when block size changes
 BLOCK_SIZE = 20
 
@@ -153,6 +153,11 @@ class Game:
             pos_x += 20
 
     def show_message(self, message_text):
+        """Shows a large message at the center of the screen
+
+        Args:
+            message_text (str): Text of the message to display
+        """
         text = large_font.render(message_text, True, BLACK)
         rect = self.game_screen.get_rect()
         text_rect = text.get_rect(center=(rect.center))
@@ -183,6 +188,7 @@ class Game:
                                 global all_squares
                                 all_squares = pickle.load(f)
                                 self.draw_board()
+
                         except:
                             self.show_message("Load unsuccessful")
                         else:
