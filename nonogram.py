@@ -250,8 +250,7 @@ class Game:
                     j = 0
                 else:
                     j += 1
-            if i < self.blocks_vertically:
-                i += 1
+            i += 1
 
     def run_game_loop(self):
         """Runs the main game loop."""
