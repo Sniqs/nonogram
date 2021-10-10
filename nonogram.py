@@ -4,10 +4,9 @@ import pickle
 
 # Screen and block size
 SCREEN_TITLE = "Nonogram"
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 600
-# TODO: Fix font scaling when block size changes
-BLOCK_SIZE = 20
+SCREEN_WIDTH = 1200
+SCREEN_HEIGHT = 1200
+
 
 # Colors
 WHITE = (255, 255, 255)
@@ -15,6 +14,11 @@ BLACK = (0, 0, 0)
 LIGHT_GREY = (220, 220, 220)
 GREY = (190, 190, 190)
 DARK_GREY = (119, 119, 119)
+
+
+# Scale
+scale = 1.5
+block_size = int(20 * scale)
 
 # Board numbers
 numbers_left = [
@@ -57,8 +61,8 @@ clock = pygame.time.Clock()
 
 # Set up font
 pygame.font.init()
-font = pygame.font.SysFont("Arial", 18)
-large_font = pygame.font.SysFont("Arial", 50)
+font = pygame.font.SysFont("Arial", int(18 * scale))
+large_font = pygame.font.SysFont("Arial", int(50 * scale))
 
 
 class Game:
@@ -94,12 +98,18 @@ class Game:
 
         all_squares = []
         square_fill = "empty"
-        for y in range(200, self.blocks_vertically * BLOCK_SIZE + 200, BLOCK_SIZE):
+        for y in range(
+            block_size * 10,
+            (self.blocks_vertically * block_size) + (block_size * 10),
+            block_size,
+        ):
             row = []
             for x in range(
-                200, self.blocks_horizontally * BLOCK_SIZE + 200, BLOCK_SIZE
+                block_size * 10,
+                (self.blocks_horizontally * block_size) + (block_size * 10),
+                block_size,
             ):
-                square = pygame.Rect(x, y, BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                square = pygame.Rect(x, y, block_size - 1, block_size - 1)
                 row.append([square, square_fill])
             all_squares.append(row)
         return all_squares
@@ -110,10 +120,10 @@ class Game:
             self.game_screen,
             DARK_GREY,
             pygame.Rect(
-                199,
-                199,
-                self.blocks_horizontally * BLOCK_SIZE + 1,
-                self.blocks_vertically * BLOCK_SIZE + 1,
+                (block_size * 10) - 1,
+                (block_size * 10) - 1,
+                self.blocks_horizontally * block_size + 1,
+                self.blocks_vertically * block_size + 1,
             ),
         )
 
@@ -123,27 +133,27 @@ class Game:
                 if square_fill == "empty":
                     square_image = pygame.image.load("empty.png")
                     image = pygame.transform.scale(
-                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                        square_image, (block_size - 1, block_size - 1)
                     )
                 elif square_fill == "black":
                     square_image = pygame.image.load("black.png")
                     image = pygame.transform.scale(
-                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                        square_image, (block_size - 1, block_size - 1)
                     )
                 elif square_fill == "dot":
                     square_image = pygame.image.load("dot.png")
                     image = pygame.transform.scale(
-                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                        square_image, (block_size - 1, block_size - 1)
                     )
                 elif square_fill == "tentative_black":
                     square_image = pygame.image.load("tentative_black.png")
                     image = pygame.transform.scale(
-                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                        square_image, (block_size - 1, block_size - 1)
                     )
                 elif square_fill == "tentative_dot":
                     square_image = pygame.image.load("tentative_dot.png")
                     image = pygame.transform.scale(
-                        square_image, (BLOCK_SIZE - 1, BLOCK_SIZE - 1)
+                        square_image, (block_size - 1, block_size - 1)
                     )
                 pygame.draw.rect(self.game_screen, WHITE, square)
                 self.game_screen.blit(image, (square.left, square.top))
@@ -152,32 +162,33 @@ class Game:
         """Draws the numbers on the left and top of the board."""
 
         # Drawing the numbers on the left of the board
-        pos_y = 200
+        pos_y = block_size * 10
         for i in range(len(numbers_left)):
-            pos_x = 200 - (20 * len(numbers_left[i]))
+            pos_x = (block_size * 10) - (block_size * len(numbers_left[i]))
             for j in range(len(numbers_left[i])):
                 number = font.render(str(numbers_left[i][j]), True, BLACK)
+
                 if numbers_left[i][j] > 9:
-                    self.game_screen.blit(number, (pos_x - 6, pos_y))
+                    self.game_screen.blit(number, (pos_x - (block_size * 0.25), pos_y))
                 else:
                     self.game_screen.blit(number, (pos_x, pos_y))
-                pos_x += 20
+                pos_x += block_size
 
-            pos_y += 20
+            pos_y += block_size
 
         # Drawing the numbers on the top of the board
-        pos_x = 200
+        pos_x = block_size * 10
         for i in range(len(numbers_top)):
-            pos_y = 200 - (20 * len(numbers_top[i]))
+            pos_y = (block_size * 10) - (block_size * len(numbers_top[i]))
             for j in range(len(numbers_top[i])):
                 number = font.render(str(numbers_top[i][j]), True, BLACK)
                 if numbers_top[i][j] > 9:
                     self.game_screen.blit(number, (pos_x, pos_y))
                 else:
-                    self.game_screen.blit(number, (pos_x + 6, pos_y))
-                pos_y += 20
+                    self.game_screen.blit(number, (pos_x + (block_size * 0.25), pos_y))
+                pos_y += block_size
 
-            pos_x += 20
+            pos_x += block_size
 
     def show_message(self, message_text):
         """Shows a large message at the center of the screen
@@ -188,7 +199,7 @@ class Game:
         text = large_font.render(message_text, True, BLACK)
         rect = self.game_screen.get_rect()
         text_rect = text.get_rect(center=(rect.center))
-        bg_rect = text_rect.inflate(BLOCK_SIZE / 4, BLOCK_SIZE / 4)
+        bg_rect = text_rect.inflate(block_size / 4, block_size / 4)
         pygame.draw.rect(self.game_screen, BLACK, bg_rect)
         pygame.draw.rect(self.game_screen, WHITE, text_rect)
         self.game_screen.blit(text, text_rect)
@@ -272,7 +283,7 @@ class Button:
         self.y_pos = y_pos
         self.button_text = button_text
         self.button = pygame.Rect(
-            self.x_pos, self.y_pos, BLOCK_SIZE * 4, BLOCK_SIZE * 2
+            self.x_pos, self.y_pos, block_size * 4, block_size * 2
         )
 
     def draw_button(self, surface):
@@ -301,8 +312,8 @@ class Button:
 
 pygame.init()
 new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
-load_button = Button(BLOCK_SIZE / 2, BLOCK_SIZE / 2, "LOAD")
-save_button = Button(BLOCK_SIZE * 5, BLOCK_SIZE / 2, "SAVE")
+load_button = Button(block_size / 2, block_size / 2, "LOAD")
+save_button = Button(block_size * 5, block_size / 2, "SAVE")
 all_squares = new_game.create_blank_board()
 new_game.run_game_loop()
 
