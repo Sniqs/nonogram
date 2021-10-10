@@ -17,7 +17,7 @@ DARK_GREY = (119, 119, 119)
 
 
 # Scale
-scale = 1.5
+scale = 1.0
 block_size = int(20 * scale)
 
 # Board numbers
@@ -206,8 +206,59 @@ class Game:
         pygame.display.update()
         clock.tick(self.TICK_RATE / 60)
 
+    def scale_board(self, scale):
+        """Changes all global variables necessary to zoom the board in and out
+
+        Args:
+            scale (float): Target scale of the board
+        """
+
+        global block_size
+        global font
+        global large_font
+        global load_button
+        global save_button
+        global up_scale_button
+        global down_scale_button
+
+        block_size = int(20 * scale)
+        font = pygame.font.SysFont("Arial", int(18 * scale))
+        large_font = pygame.font.SysFont("Arial", int(50 * scale))
+        load_button = Button(block_size / 2, block_size / 2, "LOAD")
+        save_button = Button(block_size * 5, block_size / 2, "SAVE")
+        up_scale_button = Button(block_size * 9.5, block_size / 2, "+")
+        down_scale_button = Button(block_size * 14, block_size / 2, "-")
+
+        i = 0
+        j = 0
+
+        for y in range(
+            block_size * 10,
+            (self.blocks_vertically * block_size) + (block_size * 10),
+            block_size,
+        ):
+            row = []
+
+            for x in range(
+                block_size * 10,
+                (self.blocks_horizontally * block_size) + (block_size * 10),
+                block_size,
+            ):
+                square = pygame.Rect(x, y, block_size - 1, block_size - 1)
+                all_squares[i][j][0] = square
+                if j == self.blocks_horizontally - 1:
+                    j = 0
+                else:
+                    j += 1
+            if i < self.blocks_vertically:
+                i += 1
+
     def run_game_loop(self):
         """Runs the main game loop."""
+
+        global all_squares
+        global scale
+
         is_game_over = False
 
         # Main game loop
@@ -222,8 +273,8 @@ class Game:
                     if load_button.button_clicked(event.pos):
                         try:
                             with open("save_game.txt", "rb") as f:
-                                global all_squares
                                 all_squares = pickle.load(f)
+                                self.scale_board(scale)
                                 self.draw_board()
 
                         except:
@@ -239,6 +290,14 @@ class Game:
                             self.show_message("Save unsuccessful")
                         else:
                             self.show_message("Game Saved")
+
+                    if up_scale_button.button_clicked(event.pos):
+                        scale += 0.1
+                        self.scale_board(scale)
+
+                    if down_scale_button.button_clicked(event.pos):
+                        scale -= 0.1
+                        self.scale_board(scale)
 
                     # Check which square was clicked and change its color on the list
                     for row in all_squares:
@@ -271,6 +330,8 @@ class Game:
             self.draw_numbers()
             load_button.draw_button(self.game_screen)
             save_button.draw_button(self.game_screen)
+            up_scale_button.draw_button(self.game_screen)
+            down_scale_button.draw_button(self.game_screen)
 
             # Update display
             pygame.display.update()
@@ -314,6 +375,8 @@ pygame.init()
 new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
 load_button = Button(block_size / 2, block_size / 2, "LOAD")
 save_button = Button(block_size * 5, block_size / 2, "SAVE")
+up_scale_button = Button(block_size * 9.5, block_size / 2, "+")
+down_scale_button = Button(block_size * 14, block_size / 2, "-")
 all_squares = new_game.create_blank_board()
 new_game.run_game_loop()
 
