@@ -271,6 +271,18 @@ class Game:
                     j += 1
             i += 1
 
+    def check_number_of_squares(self):
+        filled_squares = []
+        for row in all_squares:
+            filled_row = []
+            for item in row:
+                if item[1] == "black":
+                    filled_row.append(1)
+                else:
+                    filled_row.append(0)
+            filled_squares.append(filled_row)
+        # TODO: Add 1s in rows (0 resets count) to get the number of consecutive black squares then compare to numbers_left
+
     def run_game_loop(self):
         """Runs the main game loop."""
 
@@ -287,6 +299,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     is_game_over = True
 
+                # Handle mouse click events
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if load_button.button_clicked(event.pos):
                         try:
@@ -346,6 +359,7 @@ class Game:
             self.game_screen.fill(WHITE)
             self.draw_board()
             self.draw_numbers()
+            self.check_number_of_squares()
             load_button.draw_button(self.game_screen)
             save_button.draw_button(self.game_screen)
             up_scale_button.draw_button(self.game_screen)
