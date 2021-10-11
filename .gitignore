@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # Game save file
-save_game.txt
+save_game.sav

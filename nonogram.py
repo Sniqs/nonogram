@@ -17,23 +17,23 @@ DARK_GREY = (119, 119, 119)
 
 
 # Scale
-scale = 1.0
+scale = 1.5
 block_size = int(20 * scale)
 
 # Board numbers
 numbers_left = [
-    [5, 5],
+    [5, -5],
     [3, 5, 3],
     [2, 9, 2],
     [1, 2, 1, 2, 1],
-    [1, 11, 1],
+    [1, -11, 1],
     [4, 1, 4],
     [4, 1, 4],
-    [13],
+    [-13],
     [6, 6],
     [13],
     [1, 2, 2, 1],
-    [1, 11, 1],
+    [-1, 11, 1],
     [2, 9, 2],
     [3, 5, 3],
     [5, 5],
@@ -42,16 +42,16 @@ numbers_top = [
     [5, 5],
     [3, 5, 3],
     [2, 9, 2],
-    [1, 11, 1],
+    [1, -11, 1],
     [1, 1, 6, 2, 1],
     [2, 1, 3, 3],
     [2, 1, 3, 3],
-    [7, 1, 3],
+    [-7, 1, 3],
     [2, 1, 3, 3],
     [2, 1, 3, 3],
     [1, 1, 6, 2, 1],
     [1, 11, 1],
-    [2, 9, 2],
+    [2, -9, -2],
     [3, 5, 3],
     [5, 5],
 ]
@@ -166,9 +166,19 @@ class Game:
         for i in range(len(numbers_left)):
             pos_x = (block_size * 10) - (block_size * len(numbers_left[i]))
             for j in range(len(numbers_left[i])):
-                number = font.render(str(numbers_left[i][j]), True, BLACK)
+                number = font.render(str(abs(numbers_left[i][j])), True, BLACK)
 
-                if numbers_left[i][j] > 9:
+                if numbers_left[i][j] < 0:
+                    number_rect = number.get_rect(
+                        left=pos_x - (block_size * 0.25), top=pos_y
+                    )
+                    slash_image = pygame.image.load("slash.png")
+                    image = pygame.transform.scale(
+                        slash_image, (block_size - 1, block_size - 1)
+                    )
+                    self.game_screen.blit(image, (number_rect.left, number_rect.top))
+
+                if abs(numbers_left[i][j]) > 9:
                     self.game_screen.blit(number, (pos_x - (block_size * 0.25), pos_y))
                 else:
                     self.game_screen.blit(number, (pos_x, pos_y))
@@ -181,8 +191,17 @@ class Game:
         for i in range(len(numbers_top)):
             pos_y = (block_size * 10) - (block_size * len(numbers_top[i]))
             for j in range(len(numbers_top[i])):
-                number = font.render(str(numbers_top[i][j]), True, BLACK)
-                if numbers_top[i][j] > 9:
+                number = font.render(str(abs(numbers_top[i][j])), True, BLACK)
+
+                if numbers_top[i][j] < 0:
+                    number_rect = number.get_rect(left=pos_x, top=pos_y)
+                    slash_image = pygame.image.load("slash.png")
+                    image = pygame.transform.scale(
+                        slash_image, (block_size - 1, block_size - 1)
+                    )
+                    self.game_screen.blit(image, (number_rect.left, number_rect.top))
+
+                if abs(numbers_top[i][j]) > 9:
                     self.game_screen.blit(number, (pos_x, pos_y))
                 else:
                     self.game_screen.blit(number, (pos_x + (block_size * 0.25), pos_y))
@@ -271,7 +290,7 @@ class Game:
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if load_button.button_clicked(event.pos):
                         try:
-                            with open("save_game.txt", "rb") as f:
+                            with open("save_game.sav", "rb") as f:
                                 all_squares = pickle.load(f)
                                 self.scale_board(scale)
                                 self.draw_board()
@@ -283,7 +302,7 @@ class Game:
 
                     if save_button.button_clicked(event.pos):
                         try:
-                            with open("save_game.txt", "wb") as f:
+                            with open("save_game.sav", "wb") as f:
                                 pickle.dump(all_squares, f)
                         except:
                             self.show_message("Save unsuccessful")
