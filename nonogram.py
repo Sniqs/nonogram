@@ -270,10 +270,10 @@ class Game:
                 else:
                     j += 1
             i += 1
+
     @staticmethod
     def check_number_of_squares():
-        """Checks if the number of black squares is equal to the number in the solution
-        """
+        """Checks if the number of black squares is equal to the number in the solution"""
         filled_squares = []
         number = 0
 
@@ -291,7 +291,6 @@ class Game:
                 filled_row.append(number)
             number = 0
             filled_squares.append(filled_row)
-        
 
         for i, row in enumerate(numbers_left):
             for j, number in enumerate(row):
@@ -323,8 +322,6 @@ class Game:
             number = 0
             filled_squares.append(filled_row)
 
-        
-
         for i, row in enumerate(numbers_top):
             for j, number in enumerate(row):
                 numbers_top[i][j] = abs(numbers_top[i][j])
@@ -335,6 +332,19 @@ class Game:
                     filled_squares[i].remove(number)
                     numbers_top[i][j] = -numbers_top[i][j]
 
+    def check_if_all_correct(self):
+        all_correct = True
+        for row in numbers_left:
+            for item in row:
+                if item > 0:
+                    all_correct = False
+        for row in numbers_top:
+            for item in row:
+                if item > 0:
+                    all_correct = False
+
+        return all_correct
+
     def run_game_loop(self):
         """Runs the main game loop."""
 
@@ -342,6 +352,7 @@ class Game:
         global scale
 
         is_game_over = False
+        is_game_won = False
 
         # Main game loop
         while not is_game_over:
@@ -408,10 +419,17 @@ class Game:
                                     item[1] = "empty"
 
             # Redraw screen
+
             self.game_screen.fill(WHITE)
             self.draw_board()
             self.draw_numbers()
             self.check_number_of_squares()
+            if not is_game_won:
+                if self.check_if_all_correct() == True:
+                    self.show_message("Correct!")
+
+                    is_game_won = True
+
             load_button.draw_button(self.game_screen)
             save_button.draw_button(self.game_screen)
             up_scale_button.draw_button(self.game_screen)
@@ -456,7 +474,9 @@ class Button:
 
 
 pygame.init()
-new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
+new_game = Game(
+    SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, len(numbers_left), len(numbers_top)
+)
 load_button = Button(block_size / 2, block_size / 2, "LOAD")
 save_button = Button(block_size * 5, block_size / 2, "SAVE")
 up_scale_button = Button(block_size * 9.5, block_size / 2, "+")
