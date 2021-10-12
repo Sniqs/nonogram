@@ -272,16 +272,39 @@ class Game:
             i += 1
 
     def check_number_of_squares(self):
+        square_map = []
         filled_squares = []
+        filled_row = []
+        number = 0
+
         for row in all_squares:
-            filled_row = []
+            row_map = []
             for item in row:
                 if item[1] == "black":
-                    filled_row.append(1)
+                    row_map.append(1)
                 else:
-                    filled_row.append(0)
-            filled_squares.append(filled_row)
+                    row_map.append(0)
+            square_map.append(row_map)
+
         # TODO: Add 1s in rows (0 resets count) to get the number of consecutive black squares then compare to numbers_left
+
+        for row in square_map:
+            filled_row = []
+            for square in row:
+                if square == 1:
+                    number += 1
+                else:
+                    if number != 0:
+                        filled_row.append(number)
+                        number = 0
+                    else:
+                        continue
+            if number != 0:
+                filled_row.append(number)
+            number = 0
+            filled_squares.append(filled_row)
+
+        print(filled_squares)
 
     def run_game_loop(self):
         """Runs the main game loop."""
@@ -290,6 +313,9 @@ class Game:
         global scale
 
         is_game_over = False
+
+        with open("save_game.sav", "rb") as f:  # TODO: remove these two lines
+            all_squares = pickle.load(f)
 
         # Main game loop
         while not is_game_over:
@@ -404,7 +430,7 @@ class Button:
 
 
 pygame.init()
-new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
+new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 5, 5)
 load_button = Button(block_size / 2, block_size / 2, "LOAD")
 save_button = Button(block_size * 5, block_size / 2, "SAVE")
 up_scale_button = Button(block_size * 9.5, block_size / 2, "+")
