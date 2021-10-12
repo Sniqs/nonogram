@@ -22,18 +22,18 @@ block_size = int(20 * scale)
 
 # Board numbers
 numbers_left = [
-    [5, -5],
+    [5, 5],
     [3, 5, 3],
     [2, 9, 2],
     [1, 2, 1, 2, 1],
-    [1, -11, 1],
+    [1, 11, 1],
     [4, 1, 4],
     [4, 1, 4],
-    [-13],
+    [13],
     [6, 6],
     [13],
     [1, 2, 2, 1],
-    [-1, 11, 1],
+    [1, 11, 1],
     [2, 9, 2],
     [3, 5, 3],
     [5, 5],
@@ -42,16 +42,16 @@ numbers_top = [
     [5, 5],
     [3, 5, 3],
     [2, 9, 2],
-    [1, -11, 1],
+    [1, 11, 1],
     [1, 1, 6, 2, 1],
     [2, 1, 3, 3],
     [2, 1, 3, 3],
-    [-7, 1, 3],
+    [7, 1, 3],
     [2, 1, 3, 3],
     [2, 1, 3, 3],
     [1, 1, 6, 2, 1],
     [1, 11, 1],
-    [2, -9, -2],
+    [2, 9, 2],
     [3, 5, 3],
     [5, 5],
 ]
@@ -270,41 +270,70 @@ class Game:
                 else:
                     j += 1
             i += 1
-
-    def check_number_of_squares(self):
-        square_map = []
+    @staticmethod
+    def check_number_of_squares():
+        """Checks if the number of black squares is equal to the number in the solution
+        """
         filled_squares = []
-        filled_row = []
         number = 0
 
+        # Horizontal
         for row in all_squares:
-            row_map = []
-            for item in row:
-                if item[1] == "black":
-                    row_map.append(1)
-                else:
-                    row_map.append(0)
-            square_map.append(row_map)
-
-        # TODO: Add 1s in rows (0 resets count) to get the number of consecutive black squares then compare to numbers_left
-
-        for row in square_map:
             filled_row = []
             for square in row:
-                if square == 1:
+                if square[1] == "black":
                     number += 1
                 else:
                     if number != 0:
                         filled_row.append(number)
                         number = 0
-                    else:
-                        continue
+            if number != 0:
+                filled_row.append(number)
+            number = 0
+            filled_squares.append(filled_row)
+        
+
+        for i, row in enumerate(numbers_left):
+            for j, number in enumerate(row):
+                numbers_left[i][j] = abs(numbers_left[i][j])
+
+        for i, row in enumerate(numbers_left):
+            for j, number in enumerate(row):
+                if number in filled_squares[i]:
+                    filled_squares[i].remove(number)
+                    numbers_left[i][j] = -numbers_left[i][j]
+
+        # Vertical
+        filled_squares = []
+        number = 0
+        temp_list = [list(x) for x in zip(*all_squares)]
+
+        for row in temp_list:
+            filled_row = []
+            for square in row:
+                if square[1] == "black":
+                    number += 1
+                else:
+                    if number != 0:
+                        filled_row.append(number)
+                        number = 0
+
             if number != 0:
                 filled_row.append(number)
             number = 0
             filled_squares.append(filled_row)
 
-        print(filled_squares)
+        
+
+        for i, row in enumerate(numbers_top):
+            for j, number in enumerate(row):
+                numbers_top[i][j] = abs(numbers_top[i][j])
+
+        for i, row in enumerate(numbers_top):
+            for j, number in enumerate(row):
+                if number in filled_squares[i]:
+                    filled_squares[i].remove(number)
+                    numbers_top[i][j] = -numbers_top[i][j]
 
     def run_game_loop(self):
         """Runs the main game loop."""
@@ -313,9 +342,6 @@ class Game:
         global scale
 
         is_game_over = False
-
-        with open("save_game.sav", "rb") as f:  # TODO: remove these two lines
-            all_squares = pickle.load(f)
 
         # Main game loop
         while not is_game_over:
@@ -430,7 +456,7 @@ class Button:
 
 
 pygame.init()
-new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 5, 5)
+new_game = Game(SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, 15, 15)
 load_button = Button(block_size / 2, block_size / 2, "LOAD")
 save_button = Button(block_size * 5, block_size / 2, "SAVE")
 up_scale_button = Button(block_size * 9.5, block_size / 2, "+")
