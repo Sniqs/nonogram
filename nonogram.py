@@ -7,7 +7,6 @@ SCREEN_TITLE = "Nonogram"
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 
-
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -15,46 +14,9 @@ LIGHT_GREY = (220, 220, 220)
 GREY = (190, 190, 190)
 DARK_GREY = (119, 119, 119)
 
-
 # Scale
 scale = 1.5
 block_size = int(20 * scale)
-
-# Board numbers
-# numbers_left = [
-#     [5, 5],
-#     [3, 5, 3],
-#     [2, 9, 2],
-#     [1, 2, 1, 2, 1],
-#     [1, 11, 1],
-#     [4, 1, 4],
-#     [4, 1, 4],
-#     [13],
-#     [6, 6],
-#     [13],
-#     [1, 2, 2, 1],
-#     [1, 11, 1],
-#     [2, 9, 2],
-#     [3, 5, 3],
-#     [5, 5],
-# ]
-# numbers_top = [
-#     [5, 5],
-#     [3, 5, 3],
-#     [2, 9, 2],
-#     [1, 11, 1],
-#     [1, 1, 6, 2, 1],
-#     [2, 1, 3, 3],
-#     [2, 1, 3, 3],
-#     [7, 1, 3],
-#     [2, 1, 3, 3],
-#     [2, 1, 3, 3],
-#     [1, 1, 6, 2, 1],
-#     [1, 11, 1],
-#     [2, 9, 2],
-#     [3, 5, 3],
-#     [5, 5],
-# ]
 
 # Set up the clock
 clock = pygame.time.Clock()
@@ -332,7 +294,13 @@ class Game:
                     filled_squares[i].remove(number)
                     numbers_top[i][j] = -numbers_top[i][j]
 
-    def check_if_all_correct(self):
+    @staticmethod
+    def check_if_all_correct():
+        """Checks if all black squares are correctly placed
+
+        Returns:
+            bool: True if all the black squares are correctly placed, False otherwise
+        """
         all_correct = True
         for row in numbers_left:
             for item in row:
