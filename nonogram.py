@@ -4,8 +4,8 @@ import pickle
 
 # Screen and block size
 SCREEN_TITLE = "Nonogram"
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 1200
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1000
 
 
 # Colors
@@ -21,40 +21,40 @@ scale = 1.5
 block_size = int(20 * scale)
 
 # Board numbers
-numbers_left = [
-    [5, 5],
-    [3, 5, 3],
-    [2, 9, 2],
-    [1, 2, 1, 2, 1],
-    [1, 11, 1],
-    [4, 1, 4],
-    [4, 1, 4],
-    [13],
-    [6, 6],
-    [13],
-    [1, 2, 2, 1],
-    [1, 11, 1],
-    [2, 9, 2],
-    [3, 5, 3],
-    [5, 5],
-]
-numbers_top = [
-    [5, 5],
-    [3, 5, 3],
-    [2, 9, 2],
-    [1, 11, 1],
-    [1, 1, 6, 2, 1],
-    [2, 1, 3, 3],
-    [2, 1, 3, 3],
-    [7, 1, 3],
-    [2, 1, 3, 3],
-    [2, 1, 3, 3],
-    [1, 1, 6, 2, 1],
-    [1, 11, 1],
-    [2, 9, 2],
-    [3, 5, 3],
-    [5, 5],
-]
+# numbers_left = [
+#     [5, 5],
+#     [3, 5, 3],
+#     [2, 9, 2],
+#     [1, 2, 1, 2, 1],
+#     [1, 11, 1],
+#     [4, 1, 4],
+#     [4, 1, 4],
+#     [13],
+#     [6, 6],
+#     [13],
+#     [1, 2, 2, 1],
+#     [1, 11, 1],
+#     [2, 9, 2],
+#     [3, 5, 3],
+#     [5, 5],
+# ]
+# numbers_top = [
+#     [5, 5],
+#     [3, 5, 3],
+#     [2, 9, 2],
+#     [1, 11, 1],
+#     [1, 1, 6, 2, 1],
+#     [2, 1, 3, 3],
+#     [2, 1, 3, 3],
+#     [7, 1, 3],
+#     [2, 1, 3, 3],
+#     [2, 1, 3, 3],
+#     [1, 1, 6, 2, 1],
+#     [1, 11, 1],
+#     [2, 9, 2],
+#     [3, 5, 3],
+#     [5, 5],
+# ]
 
 # Set up the clock
 clock = pygame.time.Clock()
@@ -474,6 +474,26 @@ class Button:
 
 
 pygame.init()
+
+numbers_left = []
+numbers_top = []
+
+# Load the numbers of the puzzle from the puzzle.txt file
+with open("puzzle.txt", "r") as f:
+    numbers_list = numbers_left
+    for line in f:
+        if line == "\n":
+            numbers_list = numbers_top
+            continue
+        elif line.startswith("#"):
+            continue
+
+        temp_list = []
+        for i in line.split():
+            temp_list.append(int(i))
+        numbers_list.append(temp_list)
+
+
 new_game = Game(
     SCREEN_TITLE, SCREEN_WIDTH, SCREEN_HEIGHT, len(numbers_left), len(numbers_top)
 )
